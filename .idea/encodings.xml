@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="Encoding">
+    <file url="file://$PROJECT_DIR$/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/main/resources/static/111.mp3" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/src/main/resources/static/background.mp3" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/src/main/resources/static/images/DIAMOND_SHD.png" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/src/main/resources/static/images/GOLD.png" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/src/main/resources/static/images/HGG_SHD.png" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/src/main/resources/static/images/LGG_SHD.png" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/src/main/resources/static/images/Logo_ldd.png" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/src/main/resources/static/images/TKT_RECRUIT.png" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/src/main/resources/static/images/W.png" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/src/main/resources/static/images/ark.png" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/src/main/resources/static/images/back.png" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/src/main/resources/static/images/ldd-logo2.png" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/src/main/resources/static/images/ldd.png" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/src/main/resources/static/images/yjwl.png" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/src/main/resources/static/images/仓库.png" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/src/main/resources/static/images/作战录像.png" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/src/main/resources/static/images/商店.png" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/src/main/resources/static/images/图标_职业_先锋_大图.png" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/src/main/resources/static/images/图标_职业_医疗_大图.png" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/src/main/resources/static/images/图标_职业_术师_大图.png" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/src/main/resources/static/images/图标_职业_特种_大图.png" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/src/main/resources/static/images/图标_职业_狙击_大图.png" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/src/main/resources/static/images/图标_职业_辅助_大图.png" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/src/main/resources/static/images/图标_职业_近卫_大图.png" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/src/main/resources/static/images/图标_职业_重装_大图.png" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/src/main/resources/static/images/干员.png" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/src/main/resources/static/images/招募.png" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/src/main/resources/static/images/潜能_1.png" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/src/main/resources/static/images/潜能_2.png" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/src/main/resources/static/images/潜能_3.png" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/src/main/resources/static/images/潜能_4.png" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/src/main/resources/static/images/潜能_5.png" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/src/main/resources/static/images/潜能_6.png" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/src/main/resources/static/images/稀有度_白_1.png" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/src/main/resources/static/images/稀有度_白_1.png" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/src/main/resources/static/images/稀有度_白_2.png" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/src/main/resources/static/images/稀有度_白_3.png" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/src/main/resources/static/images/稀有度_白_4.png" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/src/main/resources/static/images/稀有度_白_5.png" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/src/main/resources/static/images/稀有度_白_6.png" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/src/main/resources/static/images/精英_0_大图.png" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/src/main/resources/static/images/精英_1_大图.png" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/src/main/resources/static/images/精英_2_大图.png" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/src/main/resources/static/yjwl.png" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/src/main/resources/static/zjm.mp3" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/src/main/resources/templates/ldd.png" charset="GBK" />
+  </component>
+</project>

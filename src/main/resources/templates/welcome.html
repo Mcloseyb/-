@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Welcome Page</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-image: url('/images/ldd.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+        }
+        .header {
+            position: absolute;
+            top: 35%;
+            left: 5px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 10;
+        }
+        .header img {
+            height: 200px;
+            opacity: 0.5;
+        }
+        .header span {
+            font-size: 24px;
+            font-weight: bold;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 20;
+        }
+        .menu {
+            position: absolute;
+            top: 100px;
+            right: 50px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            z-index: 10;
+            width: 200px;
+            margin: 1px 0;
+        }
+        .menu img {
+            width: 400px;
+            height: auto;
+            margin: 1px 0;
+            cursor: pointer;
+        }
+        .menu-row {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            margin-right: 40px;
+        }
+        .content {
+            text-align: center;
+        }
+        .materials {
+            position: absolute;
+            top: 10px; /* 距离顶部的距离 */
+            right: 10px; /* 距离右边的距离 */
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 10px;
+            text-align: left; /* 右对齐文字 */
+            font-size: 16px;
+            z-index: 10;
+            border-radius: 5px; /* 圆角边框 */
+            widthc:100px;
+        }
+        .operator-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 20px;
+            z-index: 5;
+        }
+        .operator-image {
+            max-width: 1000px;
+            max-height: 1000px;
+            margin-bottom: 10px;
+            position: absolute;
+            cursor: move;
+            z-index: 5;
+        }
+        .resize-handle {
+            width: 10px;
+            height: 10px;
+            background-color: red;
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            cursor: se-resize;
+        }
+        .hidden {
+            display: none;
+        }
+        .slider-container {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: none;
+            z-index: 10;
+        }
+        .slider {
+            -webkit-appearance: none;
+            width: 300px;
+            height: 10px;
+            background: #ddd;
+            outline: none;
+            opacity: 0.7;
+            transition: opacity .2s;
+        }
+        .slider:hover {
+            opacity: 1;
+        }
+        .progress-container {
+            width: 80%;
+            background-color: #ddd;
+            border-radius: 5px;
+            overflow: hidden;
+            margin-top: 20px;
+            position: relative;
+        }
+        .progress-bar {
+            height: 30px;
+            width: 0;
+            background-color: #4caf50;
+            text-align: center;
+            line-height: 30px;
+            color: white;
+        }
+    </style>
+    <script>
+        let isResizeMode = false;
+        let isEliteImage = false;
+
+        function updateOperatorImage() {
+            const select = document.getElementById('operatorSelect');
+            const selectedOption = select.options[select.selectedIndex];
+            const normalImageUrl = selectedOption.getAttribute('data-normal-image');
+            const eliteImageUrl = selectedOption.getAttribute('data-elite-image');
+            const operatorImage = document.getElementById('operatorImage');
+
+            operatorImage.src = normalImageUrl;
+            isEliteImage = false;
+
+            localStorage.setItem('selectedOperator', select.value);
+            localStorage.setItem('operatorImage', normalImageUrl);
+            localStorage.setItem('isEliteImage', isEliteImage);
+        }
+        function toggleOperatorImage() {
+            const select = document.getElementById('operatorSelect');
+            const selectedOption = select.options[select.selectedIndex];
+            const normalImageUrl = selectedOption.getAttribute('data-normal-image');
+            const eliteImageUrl = selectedOption.getAttribute('data-elite-image');
+            const operatorImage = document.getElementById('operatorImage');
+
+            if (isEliteImage) {
+                operatorImage.src = normalImageUrl;
+                isEliteImage = false;
+            } else {
+                operatorImage.src = eliteImageUrl;
+                isEliteImage = true;
+            }
+
+            localStorage.setItem('operatorImage', operatorImage.src);
+            localStorage.setItem('isEliteImage', isEliteImage);
+        }
+
+
+        function makeDraggable(element) {
+            let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+            element.onmousedown = dragMouseDown;
+
+            function dragMouseDown(e) {
+                if (!isResizeMode) return;
+                e = e || window.event;
+                e.preventDefault();
+                pos3 = e.clientX;
+                pos4 = e.clientY;
+                document.onmouseup = closeDragElement;
+                document.onmousemove = elementDrag;
+            }
+
+            function elementDrag(e) {
+                e = e || window.event;
+                e.preventDefault();
+                pos1 = pos3 - e.clientX;
+                pos2 = pos4 - e.clientY;
+                pos3 = e.clientX;
+                pos4 = e.clientY;
+                element.style.top = (element.offsetTop - pos2) + "px";
+                element.style.left = (element.offsetLeft - pos1) + "px";
+
+                localStorage.setItem('operatorImageTop', element.style.top);
+                localStorage.setItem('operatorImageLeft', element.style.left);
+            }
+
+            function closeDragElement() {
+                document.onmouseup = null;
+                document.onmousemove = null;
+            }
+        }
+
+        function makeResizable(element) {
+            const resizeHandle = document.createElement('div');
+            resizeHandle.className = 'resize-handle hidden';
+            element.appendChild(resizeHandle);
+
+            resizeHandle.onmousedown = function(e) {
+                if (!isResizeMode) return;
+                e = e || window.event;
+                e.preventDefault();
+                document.onmouseup = closeResizeElement;
+                document.onmousemove = elementResize;
+            };
+
+            function elementResize(e) {
+                e = e || window.event;
+                e.preventDefault();
+                const width = e.clientX - element.getBoundingClientRect().left;
+                const height = e.clientY - element.getBoundingClientRect().top;
+                element.style.width = width + 'px';
+                element.style.height = height + 'px';
+
+                localStorage.setItem('operatorImageWidth', element.style.width);
+            }
+
+            function closeResizeElement() {
+                document.onmouseup = null;
+                document.onmousemove = null;
+            }
+        }
+
+        function toggleResizeMode() {
+            isResizeMode = !isResizeMode;
+            const resizeHandle = document.querySelector('.resize-handle');
+            const sliderContainer = document.querySelector('.slider-container');
+            if (isResizeMode) {
+                resizeHandle.classList.remove('hidden');
+                sliderContainer.style.display = 'block';
+            } else {
+                resizeHandle.classList.add('hidden');
+                sliderContainer.style.display = 'none';
+            }
+        }
+
+        function updateImageSize(value) {
+            const operatorImage = document.getElementById('operatorImage');
+            operatorImage.style.width = value + 'px';
+            operatorImage.style.height = 'auto';
+
+            localStorage.setItem('operatorImageWidth', operatorImage.style.width);
+        }
+
+        function loadSettings() {
+            const selectedOperator = localStorage.getItem('selectedOperator');
+            const operatorImageTop = localStorage.getItem('operatorImageTop');
+            const operatorImageLeft = localStorage.getItem('operatorImageLeft');
+            const operatorImageWidth = localStorage.getItem('operatorImageWidth');
+            const operatorImageUrl = localStorage.getItem('operatorImage');
+            const eliteImage = localStorage.getItem('isEliteImage') === 'true';
+
+            if (selectedOperator) {
+                document.getElementById('operatorSelect').value = selectedOperator;
+                document.getElementById('operatorImage').src = operatorImageUrl;
+                isEliteImage = eliteImage;
+            }
+            if (operatorImageTop) {
+                document.getElementById('operatorImage').style.top = operatorImageTop;
+            }
+            if (operatorImageLeft) {
+                document.getElementById('operatorImage').style.left = operatorImageLeft;
+            }
+            if (operatorImageWidth) {
+                document.getElementById('operatorImage').style.width = operatorImageWidth;
+            }
+        }
+
+        window.onload = function() {
+            const operatorImage = document.getElementById('operatorImage');
+            makeDraggable(operatorImage);
+            makeResizable(operatorImage);
+            loadSettings();
+        };
+
+        function handleRecruitmentClick(event) {
+            const recruitmentImage = document.getElementById('recruitmentImage');
+            const rect = recruitmentImage.getBoundingClientRect();
+            const clickX = event.clientX - rect.left;
+
+            if (clickX < rect.width / 2) {
+                location.href = '/recruitment?username=' + document.getElementById('username').textContent.trim();
+            } else {
+                location.href = '/drawCard?username=' + document.getElementById('username').textContent.trim();
+            }
+        }
+
+    </script>
+</head>
+<body>
+<div class="materials" th:if="${userMaterials != null}">
+    <span>合成玉: <span th:text="${userMaterials.syntheticJade}"></span></span>
+    <span> | 龙门币: <span th:text="${userMaterials.dragonGateCoin}"></span></span>
+</div>
+<div class="header">
+    <img src="./images/ldd-logo2.png" alt="Rhodes Island Logo">
+    <span id="username" th:text="'   '+${username}"></span>
+    <div class="operator-controls">
+        <select id="operatorSelect" onchange="updateOperatorImage()">
+            <option th:each="operator : ${userOperators}" th:value="${operator['operatorName']}" th:text="${operator['operatorName']}"
+                    th:data-normal-image="'data:image/png;base64,' + ${operator['normalImage']}"
+                    th:data-elite-image="'data:image/png;base64,' + ${operator['eliteImage']}"></option>
+        </select>
+        <button onclick="toggleResizeMode()">调整图像大小</button>
+        <button onclick="toggleOperatorImage()">切换立绘</button>
+    </div>
+</div>
+<div class="menu">
+    <img src="/images/干员.png"  th:attr="onclick='location.href=\'/userOperators?username=' + ${username} + '\''" alt="干员列表">
+    <img src="/images/招募.png" id="recruitmentImage" onclick="handleRecruitmentClick(event)" alt="招募">
+    <div class="menu-row">
+        <img src="/images/商店.png" th:attr="onclick='location.href=\'/userShop?username=' + ${username} + '\''" alt="商店">
+        <img src="/images/仓库.png" th:attr="onclick='location.href=\'/userMaterials?username=' + ${username} + '\''" alt="仓库">
+    </div>
+</div>
+<div class="content">
+    <div class="operator-container" th:if="${userOperators != null}">
+        <img id="operatorImage" class="operator-image"   th:src="'data:image/png;base64,' + ${userOperators[0]['normalImage']}" th:alt="${userOperators[0]['operatorName']} + ' Image'"/>
+    </div>
+</div>
+<div class="slider-container">
+    <input type="range" min="100" max="1600" value="800" class="slider" id="sizeSlider" oninput="updateImageSize(this.value)">
+</div>
+</body>
+</html>

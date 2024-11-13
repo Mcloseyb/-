@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Draw Card</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+        .header {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header span {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .buttons {
+            margin: 20px 0;
+        }
+        .buttons button {
+            margin: 0 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+        }
+        .results {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .dropdown {
+            margin: 10px;
+            display: inline-block;
+        }
+        select {
+            padding: 10px;
+            font-size: 16px;
+        }
+        .operator-image {
+            max-width: 300px;
+            max-height: 300px;
+            margin-top: 20px;
+        }
+    </style>
+    <script>
+        function showOperatorImage(selectId, imageId) {
+            const selectedOperator = document.getElementById(selectId).value;
+            if (selectedOperator) {
+                fetch('/getOperatorImage?operatorName=' + selectedOperator)
+                    .then(response => response.json())
+                    .then(data => {
+                        const imageElement = document.getElementById(imageId);
+                        if (data.普通立绘) {
+                            imageElement.src = 'data:image/png;base64,' + data.普通立绘;
+                            imageElement.alt = data.干员姓名;
+                            imageElement.style.display = 'block';
+                        } else {
+                            imageElement.style.display = 'none';
+                        }
+                    });
+            }
+        }
+
+        function submitDrawForm() {
+            const form = document.getElementById('drawForm');
+            form.submit();
+        }
+    </script>
+</head>
+<body>
+<div class="header">
+    <span th:text="'Welcome, ' + ${username} + '!'"></span>
+    <a th:href="@{/welcome(username=${username})}">Back to Welcome Page</a>
+</div>
+
+<div>
+    <form id="drawForm" th:action="@{/performDrawCard}" method="post">
+        <input type="hidden" id="username" name="username" th:value="${username}">
+
+        <div class="dropdown">
+            <label for="sixStarSelect">Select Six-Star Operator:</label>
+            <select id="sixStarSelect" name="sixStar" onchange="showOperatorImage('sixStarSelect', 'sixStarImage')">
+                <option th:each="operator : ${sixStarOperators}" th:text="${operator}" th:value="${operator}"></option>
+            </select>
+        </div>
+
+        <div class="dropdown">
+            <label for="fiveStarSelect">Select Five-Star Operator:</label>
+            <select id="fiveStarSelect" name="fiveStar1" onchange="showOperatorImage('fiveStarSelect', 'fiveStarImage')">
+                <option th:each="operator : ${fiveStarOperators}" th:text="${operator}" th:value="${operator}"></option>
+            </select>
+        </div>
+
+        <div class="dropdown">
+            <label for="anotherFiveStarSelect">Select Another Five-Star Operator:</label>
+            <select id="anotherFiveStarSelect" name="fiveStar2" onchange="showOperatorImage('anotherFiveStarSelect', 'anotherFiveStarImage')">
+                <option th:each="operator : ${fiveStarOperators}" th:text="${operator}" th:value="${operator}"></option>
+            </select>
+        </div>
+    </form>
+</div>
+
+<div>
+    <img id="sixStarImage" class="operator-image" src="" alt="Six-Star Operator Image" style="display: none;">
+    <img id="fiveStarImage" class="operator-image" src="" alt="Five-Star Operator Image" style="display: none;">
+    <img id="anotherFiveStarImage" class="operator-image" src="" alt="Another Five-Star Operator Image" style="display: none;">
+</div>
+
+<div class="buttons">
+    <button onclick="submitDrawForm()">单抽</button>
+</div>
+
+<div class="results" th:if="${drawResults}">
+    <div th:each="result : ${drawResults}">
+        <p th:text="${result['干员名']} + ' - ' + ${result['稀有度']} + '星'"></p>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>User Materials</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-image: url('/images/ldd.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+        }
+        h1 {
+            text-align: center;
+            color: white;
+            margin-bottom: 20px;
+        }
+        .header {
+            position: absolute;
+            top: 2%;
+            left: 5px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 10;
+        }
+        .header .back-link {
+            position: absolute;
+            left: 20px;
+            top: 5px;
+        }
+        .header .back-link img {
+            width: 50px; /* 设置返回图片的宽度 */
+            height: 50px; /* 设置返回图片的高度 */
+            cursor: pointer; /* 鼠标悬停时显示手型 */
+        }
+        table {
+            width: 100%;
+            max-width: 800px;
+            border-collapse: collapse;
+            margin: 0 auto;
+            background-color: rgba(0, 0, 0, 0.7); /* 黑色半透明背景 */
+            color: white;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #007bff;
+        }
+        td img {
+            width: 20px;
+            height: 20px;
+            vertical-align: middle;
+            margin-right: 5px;
+        }
+        .header {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: absolute;
+            top: 20px;
+            color: white;
+        }
+        .header .back-link {
+            position: absolute;
+            left: 20px;
+            top:5px;
+        }
+
+        .header .back-link img {
+            width:  300px; /* 设置返回图片的宽度 */
+            height: 100%; /* 设置返回图片的高度 */
+            cursor: pointer; /* 鼠标悬停时显示手型 */
+        }
+
+    </style>
+</head>
+<body>
+<div class="header">
+    <a class="back-link" th:href="@{/welcome(username=${userMaterials.username})}">
+        <img src="/images/back.png" alt="Back to Welcome Page">
+    </a>
+</div>
+<h1>仓库</h1>
+<table>
+    <thead>
+    <tr>
+        <th>材料</th>
+        <th>数量</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td><img src="/images/DIAMOND_SHD.png" alt="合成玉">合成玉</td>
+        <td th:text="${userMaterials.syntheticJade}"></td>
+    </tr>
+    <tr>
+        <td><img src="/images/GOLD.png" alt="龙门币">龙门币</td>
+        <td th:text="${userMaterials.dragonGateCoin}"></td>
+    </tr>
+    <tr>
+        <td><img src="/images/作战录像.png" alt="作战录像">作战录像</td>
+        <td th:text="${userMaterials.battleRecord}"></td>
+    </tr>
+    <tr>
+        <td><img src="/images/HGG_SHD.png" alt="黄票">黄票</td>
+        <td th:text="${userMaterials.yellowTicket}"></td>
+    </tr>
+    <tr>
+        <td><img src="/images/LGG_SHD.png" alt="绿票">绿票</td>
+        <td th:text="${userMaterials.greenTicket}"></td>
+    </tr>
+    <tr>
+        <td><img src="/images/TKT_RECRUIT.png" alt="公招券">公招券</td>
+        <td th:text="${userMaterials.publicRecruitmentTicket}"></td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>

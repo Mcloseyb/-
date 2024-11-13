@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>干员练度</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-image: url('/images/ldd.png'); /* 你的背景图片路径 */
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            position: relative;
+        }
+        .material-info {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            align-items: flex-end;
+            color: white;
+            flex-direction: row;
+        }
+        .material-info span {
+            display: flex;
+            align-items: center;
+            margin-bottom: 5px;
+            color: #11273f;
+        }
+        .material-info img {
+            width: 50px;
+            height: auto;
+            margin-right: 5px;
+        }
+        .operator-details {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        .operator-details img {
+            margin-bottom: 10px;
+        }
+        .operator-details img.rarity {
+            width: 300px; /* 调整宽度 */
+            height:auto; /* 调整高度 */
+        }
+        .operator-details img.profession {
+            width: 100px; /* 调整宽度 */
+            height: auto; /* 调整高度 */
+        }
+        .operator-details span {
+            font-size: 36px; /* 调整字体大小 */
+            color: white;
+            margin-bottom: 10px;
+        }
+        .operator-actions {
+            position: absolute;
+            right: 20px;
+            bottom: 20px;
+            display: flex;
+            top :20px;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+        .operator-actions div {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .operator-actions button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border: 1px solid #ccc;
+            background-color: rgba(0, 123, 255, 0);
+            color: white;
+            border-radius: 5px;
+            margin-right: 10px;
+        }
+        .operator-actions button.breakthrough-button {
+            background-color: #151515;
+        }
+        .potential-button {
+            position: relative;
+            background-color: #000;
+            border: none;
+            width: 50px;
+            height: 50px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .potential-button img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 5px;
+        }
+        .img-container {
+            display: flex;
+            justify-content: center;
+            width: 57%; /* 调整宽度 */
+            height: auto; /* 调整高度 */
+            border-radius: 10px;
+        }
+
+        .img-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            padding-top: 100px;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgb(0,0,0);
+            background-color: rgba(0,0,0,0.4);
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+        }
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .upgrade-bar  {
+            position: absolute;
+            right:-20px;
+            top:50px; /* 距离底部10% */
+            width: 300px; /* 占屏幕宽度的80% */
+            height: 80px; /* 占屏幕高度的10% */
+            background-color: rgba(3, 3, 3, 0.84); /* 黑色半透明 */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-top: 100px;
+            border-bottom: 100px;
+        }
+
+        .upgrade-bar span {
+            font-size: 24px; /* 字体大小 */
+            color: white;
+            margin-right: 20px; /* 调整间距 */
+        }
+
+        .upgrade-bar button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            background-color: #11273f;
+            color: white;
+            border-radius: 5px;
+        }
+        .potential-bar {
+            position: absolute;
+            right: -20px;
+            top:150px; /* 距离底部10% */
+            width: 300px; /* 占屏幕宽度的80% */
+            height: 100px; /* 占屏幕高度的10% */
+            background-color: rgba(3, 3, 3, 0.86); /* 黑色半透明 */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-top: 100px;
+            border-bottom: 100px;
+        }
+
+        .potential-bar span {
+            font-size: 10px; /* 字体大小 */
+            color: white;
+            margin-left: 10px; /* 调整间距 */
+        }
+    </style>
+</head>
+<body>
+
+<div class="material-info">
+    <span><img src="/images/GOLD.png" alt="龙门币"> <span id="dragonGateCoin" th:text="${userMaterials.dragonGateCoin}"></span></span>
+    <span><img src="/images/作战录像.png" alt="作战录像"> <span id="battleRecord" th:text="${userMaterials.battleRecord}"></span></span>
+</div>
+
+<div class="operator-details">
+    <img th:src="'/images/稀有度_白_' + ${operator.rarity} + '.png'" alt="稀有度" class="rarity">
+    <span th:text="${operatorName}"></span>
+    <img th:src="'/images/图标_职业_' + ${operator.profession} + '_大图.png'" alt="职业" class="profession">
+</div>
+
+<div class="operator-actions">
+    <div class="upgrade-bar">
+        <div>
+            <span id="currentLevel" th:text="${operatorLevels[0].level}"></span>
+            <button onclick="openUpgradeModal()">升级</button>
+        </div>
+    </div>
+
+    <div class="potential-bar">
+        <div>
+            <button class="potential-button"  onclick="openPotentialModal()">
+                <img th:src="'/images/潜能_' + ${operatorLevels[0].potential} + '.png'" alt="潜能">
+            </button>
+            <span th:if="${operatorLevels[0].potential < 6}">提升潜能</span>
+            <span th:if="${operatorLevels[0].potential == 6}">MAX</span>
+        </div>
+        <div>
+            <button th:if="${operatorLevels[0].eliteLevel < 2}" class="breakthrough-button" th:attr="data-eliteLevel=${operatorLevels[0].eliteLevel}" onclick="confirmBreakthrough(this)">精英化</button>
+            <img th:src="'/images/精英_' + ${operatorLevels[0].eliteLevel} + '_大图.png'" alt="精英化等级" style="width: 50px; height: 50px;">
+        </div>
+    </div>
+</div>
+
+<div class="img-container">
+    <img id="normalImage" th:if="${operatorLevels[0].eliteLevel < 2}" th:src="'data:image/png;base64,' + ${normalImage}" alt="Normal Image" />
+    <img id="eliteImage" th:if="${operatorLevels[0].eliteLevel == 2}" th:src="'data:image/png;base64,' + ${eliteImage}" alt="Elite Image"/>
+</div>
+
+<div id="upgradeModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeUpgradeModal()">&times;</span>
+        <h2>升级干员等级</h2>
+        <div class="level-controls">
+            <button onclick="adjustModalLevel(-1)">-</button>
+            <span id="modalLevel"></span>
+            <button onclick="adjustModalLevel(1)">+</button>
+        </div>
+        <button onclick="confirmUpgrade()">确定</button>
+    </div>
+</div>
+
+<div id="potentialModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closePotentialModal()">&times;</span>
+        <h2>提升干员潜能</h2>
+        <div>
+            当前干员信物: <span id="currentTokens" th:text="${operatorToken}"></span>
+        </div>
+        <button onclick="confirmPotential()">确定</button>
+        <button onclick="closePotentialModal()">取消</button>
+    </div>
+</div>
+
+<div id="confirmPotentialModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeConfirmPotentialModal()">&times;</span>
+        <h2>是否消耗1个信物来提升潜能？</h2>
+        <button onclick="performPotentialIncrease()">确定</button>
+        <button onclick="closeConfirmPotentialModal()">取消</button>
+    </div>
+</div>
+<script th:inline="javascript">
+    let maxLevel = 50;
+    let modalLevel = 1;
+    let currentLevel = 1;
+
+    function openUpgradeModal() {
+        currentLevel = parseInt(document.getElementById('currentLevel').textContent);
+        modalLevel = currentLevel;
+        document.getElementById('modalLevel').textContent = modalLevel;
+        document.getElementById('upgradeModal').style.display = "block";
+    }
+
+    function closeUpgradeModal() {
+        document.getElementById('upgradeModal').style.display = "none";
+    }
+
+    function adjustModalLevel(delta) {
+        modalLevel += delta;
+        if (modalLevel < currentLevel) {
+            modalLevel = currentLevel;
+        } else if (modalLevel > maxLevel) {
+            modalLevel = maxLevel;
+        }
+        document.getElementById('modalLevel').textContent = modalLevel;
+    }
+
+    function confirmUpgrade() {
+        const username = /*[[${username}]]*/ '';
+        const operatorName = /*[[${operatorName}]]*/ '';
+        const newLevel = modalLevel;
+        const coinsRequired = (newLevel - currentLevel) * 100;
+        const recordsRequired = (newLevel - currentLevel) * 10;
+
+        if (confirm(`确定要消耗${coinsRequired}龙门币和${recordsRequired}作战录像来升级吗？`)) {
+            fetch('/upgradeLevel', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ username, operatorName, level: newLevel })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert("升级成功！");
+                        document.getElementById('currentLevel').textContent = newLevel;
+                        document.getElementById('dragonGateCoin').textContent -= coinsRequired;
+                        document.getElementById('battleRecord').textContent -= recordsRequired;
+                        closeUpgradeModal();
+                    } else {
+                        alert("升级失败：" + data.message);
+                    }
+                });
+        }
+    }
+
+    // 打开提升潜能模态框
+    function openPotentialModal() {
+        document.getElementById('potentialModal').style.display = "block";
+    }
+
+    // 关闭提升潜能模态框
+    function closePotentialModal() {
+        document.getElementById('potentialModal').style.display = "none";
+    }
+
+    // 确认提升潜能
+    function confirmPotential() {
+        document.getElementById('confirmPotentialModal').style.display = "block";
+        closePotentialModal();
+    }
+
+    // 关闭确认提升潜能模态框
+    function closeConfirmPotentialModal() {
+        document.getElementById('confirmPotentialModal').style.display = "none";
+    }
+
+    // 执行潜能提升
+    function performPotentialIncrease() {
+        const username = /*[[${username}]]*/ '';
+        const operatorName = /*[[${operatorName}]]*/ '';
+        const tokensAvailable = parseInt(document.getElementById('currentTokens').textContent);
+        const potential = parseInt(document.getElementById('potential'));
+
+        if (tokensAvailable > 0) {
+            fetch('/increasePotential', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ username, operatorName, potential: 1 })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert("提升潜能成功！");
+                        location.reload(); // 刷新页面
+                        document.getElementById('currentTokens').textContent -= 1;
+                        document.getElementById('potential').textContent = potential + 1;
+                        closeConfirmPotentialModal();
+                        closePotentialModal();
+
+                    } else {
+                        alert("提升潜能失败：" + data.message);
+                        closeConfirmPotentialModal();
+                    }
+                })
+        } else {
+            alert("信物不足，无法提升潜能。");
+            closeConfirmPotentialModal();
+        }
+    }
+
+
+    function confirmBreakthrough(el) {
+        const username = /*[[${username}]]*/ '';
+        const operatorName = /*[[${operatorName}]]*/ '';
+        const eliteLevel = parseInt(el.getAttribute("data-eliteLevel"));
+        const currentLevel = parseInt(document.getElementById('currentLevel').textContent);
+        if ((eliteLevel === 0 && currentLevel === 50) || (eliteLevel === 1 && currentLevel === 50)) {
+            if (confirm(`确定要消耗50龙门币进行突破吗？`)) {
+                fetch('/breakthrough', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ username, operatorName, eliteLevel })
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert("突破成功！");
+                            window.location.reload();
+                        } else {
+                            alert("突破失败：" + data.message);
+                        }
+                    });
+            }
+        } else {
+            alert("当前等级不足以突破。");
+        }
+    }
+
+    function toggleImage() {
+        const normalImage = document.getElementById('normalImage');
+        const eliteImage = document.getElementById('eliteImage');
+
+        if (normalImage.style.display === "none") {
+            normalImage.style.display = "block";
+            eliteImage.style.display = "none";
+        } else {
+            normalImage.style.display = "none";
+            eliteImage.style.display = "block";
+        }
+    }
+
+    window.onload = function () {
+        const eliteLevel = /*[[${operatorLevels[0].eliteLevel}]]*/ 0;
+        if (eliteLevel === 2) {
+            document.getElementById('normalImage').style.display = 'none';
+            document.getElementById('eliteImage').style.display = 'block';
+        }
+    }
+</script>
+</body>
+</html>

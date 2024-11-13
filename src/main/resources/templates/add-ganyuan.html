@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Add Ganyuan</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-image: url('/images/ldd.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+        }
+        .container {
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 20px;
+            border-radius: 10px;
+            width: 50%;
+        }
+        h1 {
+            text-align: center;
+            color: white;
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 10px;
+        }
+        input, select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: none;
+            border-radius: 5px;
+        }
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            background-color: #007bff;
+            color: white;
+        }
+        .image-preview {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        .image-preview img {
+            width: 45%;
+            height: auto;
+            border-radius: 5px;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            padding-top: 100px;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgb(0,0,0);
+            background-color: rgba(0,0,0,0.4);
+        }
+        .modal-content {
+            background-color: rgba(0, 0, 0, 0.63);
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+        }
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Add Ganyuan</h1>
+    <div th:if="${message}">
+        <p th:text="${message}"></p>
+    </div>
+    <form action="#" th:action="@{/add-ganyuan}" th:object="${ganyuan}" method="post" enctype="multipart/form-data">
+        <div>
+            <label>姓名: </label>
+            <input type="text" th:field="*{ganyuanName}" required />
+        </div>
+        <div>
+            <label>稀有度: </label>
+            <input type="number" th:field="*{rarity}" min="1" max="6" required />
+        </div>
+        <div>
+            <label>职业: </label>
+            <select th:field="*{profession}" required>
+                <option value="" disabled selected>选择职业</option>
+                <option value="辅助">辅助</option>
+                <option value="近卫">近卫</option>
+                <option value="狙击">狙击</option>
+                <option value="术师">术师</option>
+                <option value="特种">特种</option>
+                <option value="先锋">先锋</option>
+                <option value="医疗">医疗</option>
+                <option value="重装">重装</option>
+            </select>
+        </div>
+        <div>
+            <label>阵营: </label>
+            <select th:field="*{faction}" required>
+                <option value="" disabled selected>选择阵营</option>
+                <option value="阿戈尔">阿戈尔</option>
+                <option value="巴别塔">巴别塔</option>
+                <option value="玻利瓦尔">玻利瓦尔</option>
+                <option value="彩虹小队">彩虹小队</option>
+                <option value="东">东</option>
+                <option value="哥伦比亚">哥伦比亚</option>
+                <option value="黑钢国际">黑钢国际</option>
+                <option value="卡西米尔">卡西米尔</option>
+                <option value="拉特兰">拉特兰</option>
+                <option value="莱塔尼亚">莱塔尼亚</option>
+                <option value="雷姆必拓">雷姆必拓</option>
+                <option value="罗德岛">罗德岛</option>
+                <option value="米诺斯">米诺斯</option>
+                <option value="萨尔贡">萨尔贡</option>
+                <option value="萨米">萨米</option>
+                <option value="使徒">使徒</option>
+                <option value="维多利亚">维多利亚</option>
+                <option value="乌萨斯">乌萨斯</option>
+                <option value="谢拉格">谢拉格</option>
+                <option value="叙拉古">叙拉古</option>
+                <option value="炎">炎</option>
+                <option value="伊比利亚">伊比利亚</option>
+            </select>
+        </div>
+        <div>
+            <label>普通立绘: </label>
+            <input type="file" name="normalImage" accept="image/*" onchange="previewImage(event, 'normalImagePreview')" required />
+        </div>
+        <div>
+            <label>精二立绘: </label>
+            <input type="file" name="eliteImage" accept="image/*" onchange="previewImage(event, 'eliteImagePreview')" />
+        </div>
+        <div class="image-preview">
+            <img id="normalImagePreview" src="" alt="普通立绘预览" style="display: none;">
+            <img id="eliteImagePreview" src="" alt="精二立绘预览" style="display: none;">
+        </div>
+        <div>
+            <button type="submit">提交</button>
+        </div>
+    </form>
+</div>
+<div id="successModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <p>干员信息保存成功！</p>
+    </div>
+</div>
+<script>
+    function previewImage(event, previewId) {
+        var reader = new FileReader();
+        reader.onload = function(){
+            var output = document.getElementById(previewId);
+            output.src = reader.result;
+            output.style.display = 'block';
+        }
+        reader.readAsDataURL(event.target.files[0]);
+    }
+
+    function closeModal() {
+        document.getElementById('successModal').style.display = 'none';
+    }
+
+    document.querySelector('form').addEventListener('submit', function(event) {
+        event.preventDefault();
+        var form = event.target;
+        var formData = new FormData(form);
+
+        fetch(form.action, {
+            method: 'POST',
+            body: formData
+        }).then(response => {
+            if (response.ok) {
+                document.getElementById('successModal').style.display = 'block';
+                form.reset();
+                document.getElementById('normalImagePreview').style.display = 'none';
+                document.getElementById('eliteImagePreview').style.display = 'none';
+            } else {
+                alert('提交失败');
+            }
+        }).catch(error => {
+            console.error('Error:', error);
+            alert('提交失败');
+        });
+    });
+</script>
+</body>
+</html>

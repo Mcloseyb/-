@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>代币兑换详情</title>
+</head>
+<body>
+<h1>代币兑换详情</h1>
+<div>
+    <span>用户名: </span><span th:text="${username}"></span>
+</div>
+<table>
+    <thead>
+    <tr>
+        <th>干员名</th>
+        <th>干员信物</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="token : ${tokenData}">
+        <td th:text="${token['operatorName']}"></td>
+        <td th:text="${token['operatorToken']}"></td>
+    </tr>
+    </tbody>
+</table>
+<button onclick="exchangeAll()">全部兑换</button>
+
+<script th:inline="javascript">
+    function exchangeAll() {
+        const username = /*[[${username}]]*/ '';
+        const type = /*[[${ticketType}]]*/ '';
+        if (confirm('确定要兑换所有信物吗？')) {
+            fetch('/tokenExchange/exchange', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ username, type })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('兑换成功，您获得了' + data.totalTickets + (type === 'yellow' ? '黄票' : '绿票'));
+                        window.location.reload();
+                    } else {
+                        alert('兑换失败');
+                    }
+                });
+        }
+    }
+</script>
+</body>
+</html>

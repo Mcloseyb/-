@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>用户干员</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-image: url('/images/ldd.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .panel {
+            background-color: rgba(0, 0, 0, 0.5);
+            width: 80%;
+            height: 70%;
+            padding: 20px;
+            border-radius: 10px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            margin-bottom: 20px;
+            color: white;
+        }
+        .operator-list {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            overflow-x: auto;
+            padding-bottom: 20px; /* 留出空间放置滚动条 */
+            scrollbar-width: thin;
+            scrollbar-color: #007bff #ffffff;
+        }
+        .operator-box {
+            background-color: rgba(255, 255, 255, 0.8);
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin: 10px;
+            text-align: center;
+            border-radius: 5px;
+            width: 150px;
+        }
+        .operator-box img {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 5px;
+        }
+        .operator-box a {
+            display: block;
+            color: #007bff;
+            text-decoration: none;
+            margin-top: 10px;
+        }
+        .operator-box a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+<div class="panel">
+    <div class="header">
+        <h1>用户干员</h1>
+        <div>
+            <span>用户名: </span><span th:text="${username}"></span>
+        </div>
+    </div>
+    <div class="operator-list">
+        <div class="operator-box" th:each="operator : ${userOperators}">
+            <img th:src="'data:image/png;base64,' + ${operator['operatorImage']}" th:alt="${operator['operatorName']} + ' 图像'" class="operator-image"/>
+            <a th:href="'/operatorLevel?username=' + ${username} + '&operatorName=' + ${operator['operatorName']}" th:text="${operator['operatorName']}"></a>
+        </div>
+    </div>
+</div>
+</body>
+</html>

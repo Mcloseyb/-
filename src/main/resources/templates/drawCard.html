@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Draw Card</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-image: url('/images/ldd.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            position: relative;
+        }
+        .header {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: absolute;
+            top: 20px;
+            color: white;
+        }
+        .header .back-link {
+            position: absolute;
+            left: 20px;
+            top:5px;
+        }
+
+        .header .back-link img {
+            width:  300px; /* 设置返回图片的宽度 */
+            height: 100%; /* 设置返回图片的高度 */
+            cursor: pointer; /* 鼠标悬停时显示手型 */
+        }
+
+        .header span {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .materials {
+            font-size: 18px;
+            margin-bottom: 10px;
+            position: absolute;
+            right: 20px;
+            top: 20px;
+            display: flex;
+            align-items: center;
+        }
+        .materials img {
+            width: 20px; /* 设置图像宽度 */
+            height: 20px; /* 设置图像高度 */
+            margin-left: 5px;
+            margin-right: 5px;
+        }
+        .controls {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 120px;
+            width: 100%;
+        }
+        .panel {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            width: 80vw; /* 占据宽度的80% */
+            height: 70vh; /* 占据高度的70% */
+            background-color: rgba(0, 0, 0, 0.5);
+            margin-bottom: 20px;
+            position: relative;
+            overflow: visible;
+            box-sizing: border-box; /* 包括 padding 和 border 在内的盒子模型 */
+        }
+        .six-star-container {
+            position: absolute;
+            left: -10px; /* 根据需要调整六星干员的图片位置 */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .six-star-image {
+            max-width: 800px; /* 调整六星干员图像的最大宽度 */
+            max-height: 90%;
+        }
+        .five-star-container {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            width: 30%; /* 占据面板右边的 30% */
+            height: 100%;
+            position: relative; /* 相对定位使得子元素可以绝对定位 */
+        }
+        .five-star-image {
+            max-width: 100%; /* 调整五星干员图像的最大宽度，确保在容器内适当显示 */
+            max-height: 100%; /* 调整五星干员图像的最大高度 */
+            position: absolute; /* 绝对定位 */
+        }
+        #fiveStarImage {
+            z-index: 2; /* 调整层级，使其在另一个图像之上 */
+            left: -50px;
+            top: 100px;
+        }
+        #anotherFiveStarImage {
+            z-index: 1; /* 调整层级，使其在第一个图像之上 */
+            left: 20px; /* 根据需要调整错开距离 */
+            top: 100px;
+        }
+        .buttons-dropdowns {
+            flex-direction: column;
+            align-items: center;
+            margin-top: 40px;
+        }
+        .dropdown-container {
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            position: absolute;
+            top: 50px; /* 调整到中上顶部 */
+            left: 50%; /* 水平居中 */
+            transform: translateX(-50%); /* 确保真正居中 */
+            background-color: rgba(255, 255, 255, 0.5); /* 半透明背景 */
+            padding: 10px;
+            border-radius: 10px;
+        }
+        .dropdown {
+            margin: 0 10px;
+        }
+        select {
+            padding: 10px;
+            font-size: 16px;
+            background-color: rgba(255, 255, 255, 0.5); /* 透明背景 */
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .buttons {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            flex-direction: row; /* 并排显示 */
+            cursor: pointer;
+        }
+        .buttons button {
+            margin: 5px;
+            padding: 10px 20px;
+            font-size: 16px;
+        }
+        .buttons .single-draw {
+            background-color: #ffffff; /* 设置单抽按钮背景颜色为白色 */
+            color: #000000; /* 设置单抽按钮字体颜色为黑色 */
+            cursor: pointer;
+        }
+
+        .buttons .ten-draw {
+            background-color: #ffcc00; /* 设置十连抽按钮背景颜色为黄色 */
+            color: #000000; /* 设置十连抽按钮字体颜色为黑色 */
+            cursor: pointer;
+        }
+        .results {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        /* 新增弹出窗口的样式 */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.4);
+        }
+        .modal-content {
+            background-color: white;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 300px;
+            text-align: center;
+            position: relative;
+        }
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+    </style>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            document.getElementById('sixStarImage').src = '/images/W.png';
+            document.getElementById('sixStarImage').style.display = 'block';
+
+            // 从localStorage中读取已选择的干员
+            const sixStar = localStorage.getItem('sixStar') || '';
+            const fiveStar1 = localStorage.getItem('fiveStar1') || '';
+            const fiveStar2 = localStorage.getItem('fiveStar2') || '';
+
+            document.getElementById('sixStarSelect').value = sixStar;
+            document.getElementById('fiveStarSelect').value = fiveStar1;
+            document.getElementById('anotherFiveStarSelect').value = fiveStar2;
+
+            // 显示选择的干员图像
+            if (sixStar) showOperatorImage('sixStarSelect', 'sixStarImage', true);
+            if (fiveStar1) showOperatorImage('fiveStarSelect', 'fiveStarImage', false);
+            if (fiveStar2) showOperatorImage('anotherFiveStarSelect', 'anotherFiveStarImage', false);
+        });
+
+        function showOperatorImage(selectId, imageId, isSixStar) {
+            const selectedOperator = document.getElementById(selectId).value;
+            // 保存选择的干员到localStorage
+            if (selectId === 'sixStarSelect') {
+                localStorage.setItem('sixStar', selectedOperator);
+            } else if (selectId === 'fiveStarSelect') {
+                localStorage.setItem('fiveStar1', selectedOperator);
+            } else if (selectId === 'anotherFiveStarSelect') {
+                localStorage.setItem('fiveStar2', selectedOperator);
+            }
+            if (selectedOperator) {
+                fetch('/getOperatorImage?operatorName=' + selectedOperator)
+                    .then(response => response.json())
+                    .then(data => {
+                        const imageElement = document.getElementById(imageId);
+                        if (isSixStar) {
+                            if (data.eliteImage) {
+                                imageElement.src = 'data:image/png;base64,' + data.eliteImage;
+                                imageElement.alt = data.operatorName;
+                                imageElement.style.display = 'block';
+                            } else {
+                                imageElement.style.display = 'none';
+                            }
+                        } else {
+                            if (data.normalImage) {
+                                imageElement.src = 'data:image/png;base64,' + data.normalImage;
+                                imageElement.alt = data.operatorName;
+                                imageElement.style.display = 'block';
+                            } else {
+                                imageElement.style.display = 'none';
+                            }
+                        }
+                    });
+            }
+        }
+
+        function submitDrawForm(drawType) {
+            const jadeCost = drawType === 'ten' ? 10 : 1;
+            const userMaterials = parseInt(document.getElementById('syntheticJade').innerText, 10); // 获取当前的合成玉数量
+            const newJadeAmount = userMaterials - jadeCost;
+
+            document.getElementById('confirm-message').innerText = `${userMaterials} -> ${newJadeAmount}\n是否消耗${jadeCost}个合成玉进行${drawType === 'ten' ? '十连抽' : '单抽'}吗？`;
+
+            const modal = document.getElementById('confirmationModal');
+            modal.style.display = 'block';
+
+            const confirmButton = document.getElementById('confirm-button');
+            confirmButton.onclick = function () {
+                const form = document.getElementById('drawForm');
+                const drawTypeInput = document.createElement('input');
+                drawTypeInput.type = 'hidden';
+                drawTypeInput.name = 'drawType';
+                drawTypeInput.value = drawType;
+                form.appendChild(drawTypeInput);
+                form.submit();
+            };
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('confirmationModal');
+            modal.style.display = 'none';
+        }
+    </script>
+</head>
+<body>
+<div class="header">
+    <a class="back-link" th:href="@{/welcome(username=${username})}">
+        <img src="/images/back.png" alt="Back to Welcome Page">
+    </a>
+    <div class="materials">
+        <span><img src="/images/DIAMOND_SHD.png" alt="合成玉"> <span id="syntheticJade" th:text="${userMaterials.syntheticJade}"></span></span>
+        <span>  &nbsp;&nbsp;&nbsp;   </span>
+        <span><img src="/images/GOLD.png" alt="龙门币"> <span th:text="${userMaterials.dragonGateCoin}"></span></span>
+    </div>
+</div>
+
+<div class="controls">
+    <div class="panel">
+        <div class="six-star-container">
+            <img id="sixStarImage" class="operator-image six-star-image" src="/images/W.png" alt="Six-Star Operator Image">
+        </div>
+        <div class="five-star-container">
+            <div class="five-star-images">
+                <img id="fiveStarImage" class="operator-image five-star-image" src="" alt="Five-Star Operator Image" style="display: none;">
+                <img id="anotherFiveStarImage" class="operator-image five-star-image" src="" alt="Another Five-Star Operator Image" style="display: none;">
+            </div>
+        </div>
+        <div class="buttons">
+            <button type="button" class="single-draw" onclick="submitDrawForm('single')">寻访一次</button>
+            <button type="button" class="ten-draw"onclick="submitDrawForm('ten')">寻访十次</button>
+        </div>
+    </div>
+
+    <div class="buttons-dropdowns">
+        <form id="drawForm" th:action="@{/performDrawCard}" method="post">
+            <input type="hidden" id="username" name="username" th:value="${username}">
+
+            <div class="dropdown-container">
+                <div class="dropdown">
+                    <label for="sixStarSelect">up六星:</label>
+                    <select id="sixStarSelect" name="sixStar" onchange="showOperatorImage('sixStarSelect', 'sixStarImage', true)">
+                        <option th:each="operator : ${sixStarOperators}" th:text="${operator}" th:value="${operator}"></option>
+                    </select>
+                </div>
+                <div class="dropdown">
+                    <label for="fiveStarSelect">up五星:</label>
+                    <select id="fiveStarSelect" name="fiveStar1" onchange="showOperatorImage('fiveStarSelect', 'fiveStarImage', false)">
+                        <option th:each="operator : ${fiveStarOperators}" th:text="${operator}" th:value="${operator}"></option>
+                    </select>
+                </div>
+                <div class="dropdown">
+                    <label for="anotherFiveStarSelect">up五星:</label>
+                    <select id="anotherFiveStarSelect" name="fiveStar2" onchange="showOperatorImage('anotherFiveStarSelect', 'anotherFiveStarImage', false)">
+                        <option th:each="operator : ${fiveStarOperators}" th:text="${operator}" th:value="${operator}"></option>
+                    </select>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="results" th:if="${drawResults}">
+    <div th:each="result : ${drawResults}">
+        <p th:text="${result['operatorName']} + ' - ' + ${result['rarity']} + '星'"></p>
+    </div>
+</div>
+
+<!-- 弹出窗口 -->
+<div id="confirmationModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <p id="confirm-message"></p>
+        <button id="confirm-button">确定</button>
+        <button onclick="closeModal()">取消</button>
+    </div>
+</div>
+</body>
+</html>

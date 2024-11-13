@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>招募结果</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-image: url('/images/ldd.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center; /* 确保内容垂直居中 */
+            height: 100vh;
+            color: white; /* 确保文字在背景上可见 */
+        }
+        .header {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: absolute; /* 绝对定位 */
+            top: 20px;
+        }
+        .header span {
+            font-size: 24px;
+            font-weight: bold;
+            color: white; /* 确保在背景上可见 */
+        }
+        .header .back-link {
+            position: absolute;
+            left: 20px;
+            top: 5px;
+        }
+
+        .header .back-link img {
+            width: 30px; /* 设置返回图片的宽度 */
+            height: auto; /* 保持宽高比 */
+            cursor: pointer; /* 鼠标悬停时显示手型 */
+        }
+        .content {
+            text-align: center;
+        }
+        .rarity-6 {
+            color: orange;
+        }
+        .rarity-5 {
+            color: gold;
+        }
+        .rarity-4 {
+            color: purple;
+        }
+        .rarity-3 {
+            color: blue;
+        }
+        .rarity-2, .rarity-1 {
+            color: white;
+        }
+        .operator-image {
+            max-width: 400px;
+            max-height: 400px;
+            margin-top: 20px;
+        }
+        .back-button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border: 1px solid #ccc;
+            background-color: #007bff;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+<div class="content">
+    <h1>招募结果</h1>
+    <div>
+        <span th:class="'rarity-' + ${operatorRarity}" th:text="${operatorName}"></span>
+    </div>
+    <div>
+        <div>
+            <img th:if="${operatorImage != null}" th:src="'data:image/png;base64,' + ${operatorImage}" class="operator-image" alt="Operator Image" />
+        </div>
+    </div>
+    <div>
+        <button class="back-button" th:attr="onclick='location.href=\'/recruitment?username=' + ${username} + '\''">返回</button>
+    </div>
+</div>
+</body>
+</html>

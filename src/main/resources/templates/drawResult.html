@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Draw Result</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-image: url('/images/ldd.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center; /* 垂直居中对齐 */
+            height: 100vh; /* 设置为视口高度 */
+            width: 100vw; /* 设置为视口宽度 */
+            padding: 20px;
+            box-sizing: border-box; /* 确保内边距包含在总宽度和高度内 */
+        }
+        .header {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: absolute; /* 绝对定位 */
+            top: 20px;
+        }
+        .header span {
+            font-size: 24px;
+            font-weight: bold;
+            color: white; /* 确保在背景上可见 */
+        }
+        .header .back-link {
+            position: absolute;
+            left: 20px;
+            top: 5px;
+        }
+
+        .header .back-link img {
+            width: 300px; /* 设置返回图片的宽度 */
+            height: auto; /* 保持宽高比 */
+            cursor: pointer; /* 鼠标悬停时显示手型 */
+        }
+
+        .results {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            width: 100%; /* 占满容器宽度 */
+
+        }
+        .result-item {
+            margin: 0px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            background-color: rgba(255, 255, 255, 0.5);
+            text-align: center;
+
+        }
+        .result-item .image-container {
+            width: 200px;
+            height: 200px;
+            background-size: cover;
+            background-position: center bottom; /* 背景图像的中下部分对准容器的底部 */
+            margin: 0 auto 10px;
+            overflow: hidden;
+        }
+        .rarity-6 {
+            color: orange;
+        }
+        .rarity-5 {
+            color: gold;
+        }
+        .rarity-4 {
+            color: #e575e5;
+        }
+        .rarity-3 {
+            color: blue;
+        }
+        .rarity-2, .rarity-1 {
+            color: white;
+        }
+    </style>
+</head>
+<body>
+<div class="header">
+    <a class="back-link" th:href="@{/drawCard(username=${username})}">
+        <img src="/images/back.png" alt="Back to Welcome Page">
+    </a>
+</div>
+
+<div class="results" th:if="${drawResults}">
+    <div th:each="result : ${drawResults}" class="result-item">
+        <div class="image-container" th:style="'background-image: url(data:image/png;base64,' + ${result['image']} + ')'"></div>
+        <p th:class="'rarity-' + ${result['rarity']}" th:text="${result['operatorName']} + ' - ' + ${result['rarity']} + '星'"></p>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>干员练度</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            padding: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #007bff;
+            color: white;
+        }
+        img {
+            max-width: 100px;
+        }
+        .level-controls {
+            display: flex;
+            align-items: center;
+        }
+        .level-controls button {
+            margin: 0 5px;
+        }
+        .breakthrough-button {
+            margin-top: 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border: 1px solid #ccc;
+            background-color: #28a745;
+            color: white;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            padding-top: 100px;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgb(0,0,0);
+            background-color: rgba(0,0,0,0.4);
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+        }
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+<h1>干员练度</h1>
+<div>
+    <span>用户名: </span><span th:text="${username}"></span>
+</div>
+<div>
+    <span>干员名: </span><span th:text="${operatorName}"></span>
+</div>
+<h2>干员练度信息</h2>
+<table>
+    <thead>
+    <tr>
+        <th>立绘</th>
+        <th>等级</th>
+        <th>潜能</th>
+        <th>精英化等级</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td>
+            <img id="normalImage" th:if="${operatorLevels[0].eliteLevel < 2}" th:src="'data:image/png;base64,' + ${normalImage}" alt="Normal Image" />
+            <img id="eliteImage" th:if="${operatorLevels[0].eliteLevel == 2}" th:src="'data:image/png;base64,' + ${eliteImage}" alt="Elite Image"/>
+
+        </td>
+        <td>
+            <span id="currentLevel" th:text="${operatorLevels[0].level}"></span>
+            <button onclick="openUpgradeModal()">升级</button>
+        </td>
+        <td>
+            <span id="potential" th:text="${operatorLevels[0].potential}"></span>
+            <button th:if="${operatorLevels[0].potential < 6}" onclick="openPotentialModal()">提升潜能</button>
+        </td>
+        <td>
+            <span th:text="${operatorLevels[0].eliteLevel}"></span>
+            <button th:if="${operatorLevels[0].eliteLevel < 2}" class="breakthrough-button" th:attr="data-eliteLevel=${operatorLevels[0].eliteLevel}" onclick="confirmBreakthrough(this)">
+                突破
+            </button>
+        </td>
+    </tr>
+    </tbody>
+</table>
+<h2>用户材料信息</h2>
+<div>
+    <p>龙门币: <span id="dragonGateCoin" th:text="${userMaterials.dragonGateCoin}"></span></p>
+    <p>作战录像: <span id="battleRecord" th:text="${userMaterials.battleRecord}"></span></p>
+</div>
+
+<div id="upgradeModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeUpgradeModal()">&times;</span>
+        <h2>升级干员等级</h2>
+        <div class="level-controls">
+            <button onclick="adjustModalLevel(-1)">-</button>
+            <span id="modalLevel"></span>
+            <button onclick="adjustModalLevel(1)">+</button>
+        </div>
+        <button onclick="confirmUpgrade()">确定</button>
+    </div>
+</div>
+
+<div id="potentialModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closePotentialModal()">&times;</span>
+        <h2>提升干员潜能</h2>
+        <div>
+            当前干员信物: <span id="currentTokens" th:text="${operatorToken}"></span>
+        </div>
+        <button onclick="confirmPotential()">确定</button>
+        <button onclick="closePotentialModal()">取消</button>
+    </div>
+</div>
+
+<div id="confirmPotentialModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeConfirmPotentialModal()">&times;</span>
+        <h2>是否消耗1个信物来提升潜能？</h2>
+        <button onclick="performPotentialIncrease()">确定</button>
+        <button onclick="closeConfirmPotentialModal()">取消</button>
+    </div>
+</div>
+
+<script th:inline="javascript">
+    let maxLevel = 50;
+    let modalLevel = 1;
+    let currentLevel = 1;
+    let isNormalImage = true;
+
+    function openUpgradeModal() {
+        currentLevel = parseInt(document.getElementById('currentLevel').textContent);
+        modalLevel = currentLevel;
+        document.getElementById('modalLevel').textContent = modalLevel;
+        document.getElementById('upgradeModal').style.display = "block";
+    }
+
+    function closeUpgradeModal() {
+        document.getElementById('upgradeModal').style.display = "none";
+    }
+
+    function adjustModalLevel(delta) {
+        modalLevel += delta;
+        if (modalLevel < currentLevel) {
+            modalLevel = currentLevel;
+        } else if (modalLevel > maxLevel) {
+            modalLevel = maxLevel;
+        }
+        document.getElementById('modalLevel').textContent = modalLevel;
+    }
+
+    function confirmUpgrade() {
+        const username = /*[[${username}]]*/ '';
+        const operatorName = /*[[${operatorName}]]*/ '';
+        const newLevel = modalLevel;
+        const coinsRequired = (newLevel - currentLevel) * 100;
+        const recordsRequired = (newLevel - currentLevel) * 10;
+
+        if (confirm(`确定要消耗${coinsRequired}龙门币和${recordsRequired}作战录像来升级吗？`)) {
+            fetch('/upgradeLevel', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ username, operatorName, level: newLevel })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert("升级成功！");
+                        document.getElementById('currentLevel').textContent = newLevel;
+                        document.getElementById('dragonGateCoin').textContent -= coinsRequired;
+                        document.getElementById('battleRecord').textContent -= recordsRequired;
+                        closeUpgradeModal();
+                    } else {
+                        alert("升级失败：" + data.message);
+                    }
+                });
+        }
+    }
+
+    function openPotentialModal() {
+        document.getElementById('potentialModal').style.display = "block";
+    }
+
+    function closePotentialModal() {
+        document.getElementById('potentialModal').style.display = "none";
+    }
+
+    function confirmPotential() {
+        document.getElementById('confirmPotentialModal').style.display = "block";
+        closePotentialModal();
+    }
+
+    function closeConfirmPotentialModal() {
+        document.getElementById('confirmPotentialModal').style.display = "none";
+    }
+
+    function performPotentialIncrease() {
+        const username = /*[[${username}]]*/ '';
+        const operatorName = /*[[${operatorName}]]*/ '';
+        const tokensAvailable = parseInt(document.getElementById('currentTokens').textContent);
+        const potential = parseInt(document.getElementById('potential').textContent);
+
+        if (tokensAvailable > 0) {
+            fetch('/increasePotential', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ username, operatorName, potential: 1 })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert("提升潜能成功！");
+                        document.getElementById('currentTokens').textContent -= 1;
+                        document.getElementById('potential').textContent = potential + 1;
+                        closeConfirmPotentialModal();
+                    } else {
+                        alert("提升潜能失败：" + data.message);
+                        closeConfirmPotentialModal();
+                    }
+                });
+        } else {
+            alert("信物不足，无法提升潜能。");
+            closeConfirmPotentialModal();
+        }
+    }
+
+    function confirmBreakthrough(el) {
+        const username = /*[[${username}]]*/ '';
+        const operatorName = /*[[${operatorName}]]*/ '';
+        const eliteLevel = parseInt(el.getAttribute("data-eliteLevel"));
+        const currentLevel = parseInt(document.getElementById('currentLevel').textContent);
+        if ((eliteLevel === 0 && currentLevel === 50) || (eliteLevel === 1 && currentLevel === 50)) {
+            if (confirm(`确定要消耗50龙门币进行突破吗？`)) {
+                fetch('/breakthrough', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ username, operatorName, eliteLevel })
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert("突破成功！");
+                            window.location.reload();
+                        } else {
+                            alert("突破失败：" + data.message);
+                        }
+                    });
+            }
+        } else {
+            alert("当前等级不足以突破。");
+        }
+    }
+
+    function toggleImage() {
+        const normalImage = document.getElementById('normalImage');
+        const eliteImage = document.getElementById('eliteImage');
+
+        if (normalImage.style.display === "none") {
+            normalImage.style.display = "block";
+            eliteImage.style.display = "none";
+        } else {
+            normalImage.style.display = "none";
+            eliteImage.style.display = "block";
+        }
+    }
+
+    window.onload = function () {
+        const eliteLevel = /*[[${operatorLevels[0].eliteLevel}]]*/ 0;
+        if (eliteLevel === 2) {
+            document.getElementById('normalImage').style.display = 'none';
+            document.getElementById('eliteImage').style.display = 'block';
+        }
+    }
+</script>
+</body>
+</html>

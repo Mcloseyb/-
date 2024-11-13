@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Token Exchange</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-image: url('/images/ldd.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+        }
+        .content {
+            text-align: center;
+            background-color: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+        }
+        .content button {
+            background-color: rgba(0, 0, 0, 0.5);
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            margin: 10px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .content button:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+        .materials {
+            margin-top: 20px;
+        }
+        .header {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: absolute;
+            top: 20px;
+            color: white;
+        }
+        .header .back-link {
+            position: absolute;
+            left: 20px;
+            top:5px;
+        }
+
+        .header .back-link img {
+            width:  300px; /* 设置返回图片的宽度 */
+            height: 100%; /* 设置返回图片的高度 */
+            cursor: pointer; /* 鼠标悬停时显示手型 */
+        }
+    </style>
+    <script>
+        function exchangeToken(type) {
+            fetch(`/exchangeToken?username=${document.getElementById('username').value}&type=${type}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert(`您获取了${data.quantity}个${type === 'yellow' ? '黄票' : '绿票'}`);
+                        location.reload();
+                    } else {
+                        alert('兑换失败');
+                    }
+                });
+        }
+    </script>
+</head>
+<body>
+<div class="header">
+    <a class="back-link" th:href="@{/userShop(username=${username})}">
+        <img src="/images/back.png" alt="Back to Welcome Page">
+    </a>
+</div>
+<div class="content">
+    <h2>代币兑换</h2>
+    <input type="hidden" id="username" th:value="${username}" />
+    <button onclick="exchangeToken('yellow')">黄票兑换</button>
+    <button onclick="exchangeToken('green')">绿票兑换</button>
+    <div class="materials">
+        <h3>干员信物数量</h3>
+        <div th:if="${yellowTokens != null}">
+            <p>五星和六星干员的信物：</p>
+            <ul>
+                <li th:each="token : ${yellowTokens}" th:if="${token.quantity > 0}" th:text="${token.operatorName} + '：' + ${token.quantity}"></li>
+            </ul>
+        </div>
+        <div th:if="${greenTokens != null}">
+            <p>四星及以下干员的信物：</p>
+            <ul>
+                <li th:each="token : ${greenTokens}" th:if="${token.quantity > 0}" th:text="${token.operatorName} + '：' + ${token.quantity}"></li>
+            </ul>
+        </div>
+    </div>
+</div>
+</body>
+</html>
